@@ -1,0 +1,2 @@
+#Ignore html files - they would be used for testing
+*.html
