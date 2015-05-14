@@ -5,6 +5,7 @@
 var stormAPI = function (userName, password, apiVersion, baseURI) {
 	this.userName = userName;
 	this.password = password;
+	this.tokenExpiration = null;
 
 	/*
 	 * Specify what API is being called. Defaults to production public
@@ -39,28 +40,31 @@ var stormAPI = function (userName, password, apiVersion, baseURI) {
 		method: 'POST',
 		headers: {
 			Authorization: 'Basic ' + window.btoa(this.userName + ':' + this.password)
-		},
-		async: false // This will change once credentials are verified
+		}
 	};
 
 	/*
-	 * Verify the credentials and get the token. Also set async to true.
+	 * Verify the credentials and get the token and expiration
 	 */
 	this.checkAuthResult = this.checkAuth();
 	if (!this.checkAuthResult.status) {
 		console.log(this.checkAuthResult.message);
-	} else {
-		this.callParams.async = true;
 	}
 };
 
+/*
+ * Check credentials
+ */
 stormAPI.prototype.checkAuth = function () {
-	this.lastXHR = this.apiCall(['account','auth','token']);
+	this.callParams.headers.Authorization = 'Basic ' + window.btoa(this.userName + ':' + this.password); // Just in case this.password was changed
+	this.apiCall(['account','auth','token'], false, false);
 
 	var success = {status: false, message: ''}; // Return whether the auth worked or not
 
 	if (this.lastXHR.status == 200) {
 		this.password = this.lastXHR.responseJSON.token;
+		this.callParams.headers.Authorization = 'Basic ' + window.btoa(this.userName + ':' + this.password);
+		this.tokenExpiration = this.lastXHR.responseJSON.expires;
 		success.status = true;
 		success.message = 'Credentials Correct';
 	} else if (this.lastXHR.status == 401) {
@@ -72,21 +76,39 @@ stormAPI.prototype.checkAuth = function () {
 	return success;
 };
 
-stormAPI.prototype.apiCall = function (method, params) {
+/*
+ * Make an API call
+ *
+ * @param array method - The endpoint to be called with the components comprised as elements of an array
+ * @param object params - An optional argument to pass in parameters as part of the call. Pass false if you want to use no params but specify async
+ * @param boolean async - An optional argument for whether or not the call should be asynchronous
+ */
+stormAPI.prototype.apiCall = function (method, params, async) {
 	/*
 	 * Build the endpoint URI
 	 */
 	this.callParams.url = this.systemURI + '/' + method.join('/');
 
 	/*
-	 * Inject params if passed in
+	 * Inject params if passed in. Clean out if not.
 	 */
 	if (params) {
 		this.callParams.data = JSON.stringify({params: params});
+	} else {
+		delete this.callParams.data;
 	}
 
 	/*
-	 * Make the call and return the jqXHR object (Keep in mind, this is deferred)
+	 * Should the call be asynchronous? Default to true if not specified.
+	 */
+	if (async === undefined) {
+		this.callParams.async = true;
+	} else {
+		this.callParams.async = async;
+	}
+
+	/*
+	 * Make the call and return the jqXHR object
 	 */
 	this.lastXHR = $.ajax(this.callParams);
 	return this.lastXHR;
