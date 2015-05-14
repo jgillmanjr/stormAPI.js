@@ -49,6 +49,8 @@ var stormAPI = function (userName, password, apiVersion, baseURI) {
 	this.checkAuthResult = this.checkAuth();
 	if (!this.checkAuthResult.status) {
 		console.log(this.checkAuthResult.message);
+	} else {
+		this.callParams.async = true;
 	}
 };
 
