@@ -64,7 +64,7 @@ stormAPI.prototype.checkAuth = function () {
 	if (this.lastXHR.status == 200) {
 		this.password = this.lastXHR.responseJSON.token;
 		this.callParams.headers.Authorization = 'Basic ' + window.btoa(this.userName + ':' + this.password);
-		this.tokenExpiration = this.lastXHR.responseJSON.expires;
+		this.tokenExpiration = parseInt(this.lastXHR.responseJSON.expires); // Using parseInt because sometimes the expiration will come back as a string...
 		success.status = true;
 		success.message = 'Credentials Correct';
 	} else if (this.lastXHR.status == 401) {
@@ -74,6 +74,16 @@ stormAPI.prototype.checkAuth = function () {
 	}
 
 	return success;
+};
+
+/*
+ * Get the time remaining until token expiration
+ * This number can be skewed if there is a difference between workstation time and the time of the API server
+ */
+stormAPI.prototype.tokenTimeLeft = function () {
+	var browserTime = parseInt(Date.now()/1000); // Convert to seconds
+	var timeLeft = this.tokenExpiration - browserTime;
+	return timeLeft;
 };
 
 /*
