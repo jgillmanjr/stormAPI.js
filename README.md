@@ -43,6 +43,13 @@ apiClient.apiCall(['storm','server','list'], false, true).done(function () {
 });
 ```
 
+#### stormAPI.simpleCall() ####
+If you're looking for a quick call that synchronous and you don't want to deal with the jqXHR object, then `stormAPI.simpleCall` method is right for you.
+
+If successful, it will return an object based on the parsed JSON that was returned. If an HTTP code other than 200 is returned, a string will be returned indicating what it was.
+
+Please note that API generated exeptions (as seen [here](https://www.liquidweb.com/storm/api/docs/tutorials/exceptions.html)) will still be returned as a regularly parsed JSON object.
+
 ### Other Things ###
 
 The library contains a `tokenTimeLeft()` method which gives an idea of how much time is left on the token before expiration. Note that the time left is dependant upon how close the browser time matches the API server's time, so if the system clock is off for the client, the actual time remaining could be misrepresented.

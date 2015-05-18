@@ -87,7 +87,7 @@ stormAPI.prototype.tokenTimeLeft = function () {
 };
 
 /*
- * Make an API call
+ * Make an API call and get back the jqXHR object
  *
  * @param array method - The endpoint to be called with the components comprised as elements of an array
  * @param object params - An optional argument to pass in parameters as part of the call. Pass false if you want to use no params but specify async
@@ -122,4 +122,26 @@ stormAPI.prototype.apiCall = function (method, params, async) {
 	 */
 	this.lastXHR = $.ajax(this.callParams);
 	return this.lastXHR;
+};
+
+/*
+ * A simplified call method. The call will be performed synchronously and the JSON response object will be returned if successfull, or a string indicating an error.
+ *
+ * @param array method - The endpoint to be called with the components comprised as elements of an array
+ * @param object params - An optional argument to pass in parameters as part of the call.
+ */
+stormAPI.prototype.simpleCall = function (method, params) {
+	if (!params) {
+		params = false; // Give it an actual value of false even if not supplied
+	}
+
+	this.apiCall(method, params, false);
+
+	if (this.lastXHR.status == 200) {
+		return this.lastXHR.responseJSON;
+	} else if (this.lastXHR.status == 401) {
+		return 'Invalid Credentials';
+	} else {
+		return 'An HTTP code of ' + this.lastXHR.status + ' was returned.';
+	}
 };
