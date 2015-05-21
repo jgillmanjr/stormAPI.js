@@ -1,0 +1,27 @@
+{
+  "name": "stormAPI",
+  "version": "0.3.0",
+  "homepage": "https://github.com/jgillmanjr/stormAPI.js",
+  "authors": [
+    "Jason Gillman Jr. <jason@rrfaae.com>"
+  ],
+  "description": "A Library For Interfacing with Liquid Web's Storm API",
+  "main": "stormAPI.js",
+  "keywords": [
+    "Storm",
+    "API",
+    "JSON"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "**/*.html"
+  ],
+  "dependencies": {
+    "jquery": "~2"
+  }
+}

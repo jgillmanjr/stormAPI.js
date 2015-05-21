@@ -44,7 +44,7 @@ apiClient.apiCall(['storm','server','list'], false, true).done(function () {
 ```
 
 #### stormAPI.simpleCall() ####
-If you're looking for a quick call that synchronous and you don't want to deal with the jqXHR object, then `stormAPI.simpleCall` method is right for you.
+If you're looking for a quick call that's synchronous and you don't want to deal with the jqXHR object, then `stormAPI.simpleCall` method is right for you.
 
 If successful, it will return an object based on the parsed JSON that was returned. If an HTTP code other than 200 is returned, a string will be returned indicating what it was.
 
